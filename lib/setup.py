@@ -4,10 +4,75 @@ import pygame
 import os
 from sys import exit
 
+class Animation:
+ 
+    # data = [ [time, image], [time, image], ...]
+ 
+    def __init__(self, repeat, data): 
+        self.data = data
+        self.cur_frame = 0
+        self.ticks = pygame.time.get_ticks()
+        self.ticks_remaining = data[0][0]
+        self.pos = [0, 0]
+        self.frames = (len(self.data) - 1)
+        self.repeat = repeat
+        self.pause = 0
+ 
+    def draw(self, dest): 
+        old_ticks = self.ticks
+        self.ticks = pygame.time.get_ticks() 
+        tick_difference = self.ticks - old_ticks 
+        self.ticks_remaining -= tick_difference
+ 
+        while (self.ticks_remaining <= 0): 
+            self.cur_frame += 1
+            
+            if self.cur_frame > self.frames and self.repeat == 0:
+                self.pause = 1
+                break
+            
+            self.cur_frame %= len(self.data) 
+            self.ticks_remaining += self.data[self.cur_frame][0]
+
+        if self.pause == 0:
+            dest.blit(self.data[self.cur_frame][1], self.pos)
+
+class Player:
+	def __init__(self, screen_name):
+		self.screen = screen_name
+		self.sprite_sheet_file = pygame.image.load(os.path.join('graphics', 'john.png'))
+		#self.sprite_sheet = pygame.image.load(self.sprite_sheet_file).convert()
+		'''
+		self.walking_right_1 = self.sprite_sheet.subsurface(34, 258, 30, 60)
+		self.walking_right_2 = self.sprite_sheet.subsurface(34, 258, 48, 224)
+		self.walking_right = Animation(1, [[30, self.walking_right_1],[30, self.walking_right_2]])
+		self.rect = self.sprite_sheet.get_rect()
+		self.rect.x = 300
+		self.rect.y = 300
+		self.anim = self.walking_right
+		#self.person = pygame.image.load(os.path.join('graphics', 'floor.png'))
+		
+		
+	def draw(self, dest):
+		self.anim.pos = self.rect
+		self.anim.draw(dest)
+	'''
+	def update(self):
+        
+        #Get the current key state.
+		key = pygame.key.get_pressed()
+        
+        #Move left/right
+		if key[pygame.K_RIGHT]:
+			self.rect.x += 5
+		print self.sprite_sheet_file
+		#self.draw(screen)
+		
 class Level_1:
 	def __init__(self, screen_name):
 		self.screen = screen_name
 		self.floor = pygame.image.load(os.path.join('graphics', 'floor.png'))
+		self.player_1 = Player(self.screen)
 		
 	def get_input(self):
 		for event in pygame.event.get():
@@ -27,6 +92,7 @@ class Level_1:
 			self.get_input()
 			self.screen.fill((255,255,255))
 			self.screen.blit(self.floor, (0,0))
+			self.player_1.update()
 			pygame.display.update()
 			pygame.time.delay(25)
 

@@ -1,6 +1,6 @@
 # NEW-WARE-ORDER
 # Destroy the New-Ware-Order
-# Haroon Khalid - 06/13/2009s
+# Haroon Khalid - 06/13/2009
 
 
 import pygame
