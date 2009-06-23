@@ -8,65 +8,90 @@ class Animation:
  
     # data = [ [time, image], [time, image], ...]
  
-    def __init__(self, repeat, data): 
+    def __init__(self, data): 
         self.data = data
         self.cur_frame = 0
         self.ticks = pygame.time.get_ticks()
         self.ticks_remaining = data[0][0]
         self.pos = [0, 0]
         self.frames = (len(self.data) - 1)
-        self.repeat = repeat
-        self.pause = 0
  
     def draw(self, dest): 
         old_ticks = self.ticks
         self.ticks = pygame.time.get_ticks() 
         tick_difference = self.ticks - old_ticks 
-        self.ticks_remaining -= tick_difference
- 
-        while (self.ticks_remaining <= 0): 
+        self.ticks_remaining -= tick_difference		
+			
+        while (self.ticks_remaining <= 0):
             self.cur_frame += 1
-            
-            if self.cur_frame > self.frames and self.repeat == 0:
-                self.pause = 1
-                break
-            
-            self.cur_frame %= len(self.data) 
+            self.cur_frame %= len(self.data)
             self.ticks_remaining += self.data[self.cur_frame][0]
+ 
+        dest.blit(self.data[self.cur_frame][1], self.pos) 
 
-        if self.pause == 0:
-            dest.blit(self.data[self.cur_frame][1], self.pos)
 
 class Player:
 	def __init__(self, screen_name):
 		self.screen = screen_name
-		self.sprite_sheet_file = pygame.image.load(os.path.join('graphics', 'john.png'))
-		#self.sprite_sheet = pygame.image.load(self.sprite_sheet_file).convert()
-		'''
-		self.walking_right_1 = self.sprite_sheet.subsurface(34, 258, 30, 60)
-		self.walking_right_2 = self.sprite_sheet.subsurface(34, 258, 48, 224)
-		self.walking_right = Animation(1, [[30, self.walking_right_1],[30, self.walking_right_2]])
+		self.sprite_sheet = pygame.image.load(os.path.join('graphics', 'john-copy.png')).convert()
+		self.sprite_sheet.set_colorkey((255, 255, 255))
+		self.walking_right_1 = self.sprite_sheet.subsurface(4, 197, 28, 60)
+		self.walking_right_2 = self.sprite_sheet.subsurface(35, 197, 30, 60)
+		self.walking_right_3 = self.sprite_sheet.subsurface(70, 197, 30, 60)
+		self.walking_right_4 = self.sprite_sheet.subsurface(100, 197, 30, 60)
+		self.walking_right_5 = self.sprite_sheet.subsurface(131, 197, 30, 60)	
+		self.walking_right_6 = self.sprite_sheet.subsurface(166, 197, 30, 60)
+		self.walking_left_1 = self.sprite_sheet.subsurface(164, 133, 28, 60)
+		self.walking_left_2 = self.sprite_sheet.subsurface(132, 133, 30, 60)
+		self.walking_left_3 = self.sprite_sheet.subsurface(98, 133, 30, 60)
+		self.walking_left_4 = self.sprite_sheet.subsurface(67, 133, 30, 60)
+		self.walking_left_5 = self.sprite_sheet.subsurface(36, 133, 30, 60)	
+		self.walking_left_6 = self.sprite_sheet.subsurface(2, 133, 30, 60)		
+		self.walking_down_1 = self.sprite_sheet.subsurface(1, 65, 29, 64)
+		self.walking_down_2 = self.sprite_sheet.subsurface(30, 65, 29, 64)
+		self.walking_down_3 = self.sprite_sheet.subsurface(64, 65, 29, 64)
+		self.walking_down_4 = self.sprite_sheet.subsurface(97, 65, 29, 64)
+		self.walking_down_5 = self.sprite_sheet.subsurface(136, 65, 29, 64)	
+		self.walking_down_6 = self.sprite_sheet.subsurface(170, 65, 29, 64)
+		self.walking_up_1 = self.sprite_sheet.subsurface(2, 2, 29, 63)
+		self.walking_up_2 = self.sprite_sheet.subsurface(36, 2, 29, 64)
+		self.walking_up_3 = self.sprite_sheet.subsurface(66, 2, 29, 64)
+		self.walking_up_4 = self.sprite_sheet.subsurface(98, 2, 29, 64)
+		self.walking_up_5 = self.sprite_sheet.subsurface(131, 2, 29, 64)	
+		self.walking_up_6 = self.sprite_sheet.subsurface(161, 2, 29, 64)	
+		self.walking_right = Animation([[150, self.walking_right_1],[150, self.walking_right_2],[150, self.walking_right_2],[150, self.walking_right_3],[150, self.walking_right_4],[150, self.walking_right_5],[150, self.walking_right_6]])
+		self.walking_left = Animation([[150, self.walking_left_1],[150, self.walking_left_2],[150, self.walking_left_2],[150, self.walking_left_3],[150, self.walking_left_4],[150, self.walking_left_5],[150, self.walking_left_6]])
+		self.walking_down = Animation([[150, self.walking_down_1],[150, self.walking_down_2],[150, self.walking_down_2],[150, self.walking_down_3],[150, self.walking_down_4],[150, self.walking_down_5],[150, self.walking_down_6]])
+		self.walking_up = Animation([[150, self.walking_up_1],[150, self.walking_up_2],[150, self.walking_up_2],[150, self.walking_up_3],[150, self.walking_up_4],[150, self.walking_up_5],[150, self.walking_up_6]])
 		self.rect = self.sprite_sheet.get_rect()
 		self.rect.x = 300
 		self.rect.y = 300
-		self.anim = self.walking_right
-		#self.person = pygame.image.load(os.path.join('graphics', 'floor.png'))
-		
+		self.anim = self.walking_left
 		
 	def draw(self, dest):
-		self.anim.pos = self.rect
-		self.anim.draw(dest)
-	'''
-	def update(self):
-        
+		
         #Get the current key state.
 		key = pygame.key.get_pressed()
         
         #Move left/right
 		if key[pygame.K_RIGHT]:
-			self.rect.x += 5
-		print self.sprite_sheet_file
-		#self.draw(screen)
+			self.anim = self.walking_right
+			self.rect.x += 4
+		elif key[pygame.K_LEFT]:
+			self.anim = self.walking_left
+			self.rect.x -= 4
+		elif key[pygame.K_DOWN]:
+			self.anim = self.walking_down
+			self.rect.y += 4
+		elif key[pygame.K_UP]:
+			self.anim = self.walking_up
+			self.rect.y -= 4
+		
+		self.anim.pos = self.rect
+		self.anim.draw(dest)
+	
+	def update(self):
+		self.draw(self.screen)
 		
 class Level_1:
 	def __init__(self, screen_name):
@@ -101,7 +126,6 @@ class Select_player:
 		self.loop = 1
 		self.screen = screen_name
 		self.player_1_img = pygame.image.load(os.path.join('graphics', 'john.jpg'))
-		self.player_2_img = pygame.image.load(os.path.join('graphics', 'john.jpg'))
 		self.default_font = pygame.font.get_default_font()
 		self.font = pygame.font.SysFont(self.default_font, 26)
 		self.header_text = self.font.render("CHOOSE PLAYER", True, (0,0,0))
@@ -137,6 +161,8 @@ class Setup:
 		self.window_title = pygame.display.set_caption("NEW-WARE-ORDER")
 		self.bg_img = pygame.image.load(os.path.join('graphics', 'intro_screen.png'))
 		self.sel_player = Select_player(self.screen)
+		self.music = pygame.mixer.music.load(os.path.join('sounds', 'music.mp3'))
+		self.play = 1
 		
 	def get_input(self):
 		for event in pygame.event.get():
@@ -152,6 +178,9 @@ class Setup:
 	def run(self):
 		while self.loop == 1:
 			print "running in: Setup class"
+			if self.play == 1:
+				pygame.mixer.music.play()
+				self.play = 0
 			self.get_input()
 			self.screen.blit(self.bg_img, (0,0))
 			pygame.display.update()
