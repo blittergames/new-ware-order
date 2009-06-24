@@ -2,6 +2,7 @@
 
 import pygame
 import os
+import random
 from sys import exit
 
 class Animation:
@@ -33,7 +34,7 @@ class Animation:
 class Player:
 	def __init__(self, screen_name):
 		self.screen = screen_name
-		self.sprite_sheet = pygame.image.load(os.path.join('graphics', 'john-copy.png')).convert()
+		self.sprite_sheet = pygame.image.load(os.path.join('graphics', 'john.png')).convert()
 		self.sprite_sheet.set_colorkey((255, 255, 255))
 		self.walking_right_1 = self.sprite_sheet.subsurface(4, 197, 28, 60)
 		self.walking_right_2 = self.sprite_sheet.subsurface(35, 197, 30, 60)
@@ -68,6 +69,9 @@ class Player:
 		self.rect.y = 300
 		self.anim = self.walking_left
 		
+		
+	#def shoot(self):
+		
 	def draw(self, dest):
 		
         #Get the current key state.
@@ -86,6 +90,8 @@ class Player:
 		elif key[pygame.K_UP]:
 			self.anim = self.walking_up
 			self.rect.y -= 4
+		elif key[pygame.K_SPACE]:
+			pass
 		
 		self.anim.pos = self.rect
 		self.anim.draw(dest)
@@ -93,11 +99,27 @@ class Player:
 	def update(self):
 		self.draw(self.screen)
 		
+class Transition:
+	def __init__(self, screen_name):
+		self.loop = 1
+		self.screen = screen_name		
+		
+	def run(self):
+		while self.loop == 1:
+			random.seed()
+			x = random.randrange(0, 600)
+			y = random.randrange(0, 600)
+			pygame.draw.circle(self.screen, (0, 0, 0), (x,y), 100)
+			pygame.display.update()
+			#pygame.time.delay(6)
+		
 class Level_1:
 	def __init__(self, screen_name):
 		self.screen = screen_name
 		self.floor = pygame.image.load(os.path.join('graphics', 'floor.png'))
 		self.player_1 = Player(self.screen)
+		self.loop = 1
+		self.trans = Transition(self.screen)
 		
 	def get_input(self):
 		for event in pygame.event.get():
@@ -108,11 +130,11 @@ class Level_1:
 					exit()
 				if event.key == pygame.K_RETURN:
 					pass
-					#self.sel_player.run()
-					#self.loop = 0		
+					self.trans.run()
+					self.loop = 0		
 		
 	def run(self):
-		while True:
+		while self.loop == 1:
 			print "running in: Level_1 class"
 			self.get_input()
 			self.screen.fill((255,255,255))
@@ -120,15 +142,16 @@ class Level_1:
 			self.player_1.update()
 			pygame.display.update()
 			pygame.time.delay(25)
-
-class Select_player:
+				
+class Story_screen:
 	def __init__(self, screen_name):
-		self.loop = 1
 		self.screen = screen_name
-		self.player_1_img = pygame.image.load(os.path.join('graphics', 'john.jpg'))
 		self.default_font = pygame.font.get_default_font()
 		self.font = pygame.font.SysFont(self.default_font, 26)
-		self.header_text = self.font.render("CHOOSE PLAYER", True, (0,0,0))
+		self.text = "In an alternate time line, the year is 2010. \n you are doomed"
+		self.story_text = self.font.render(self.text, True, (0,0,0))
+		self.y = 600
+		self.loop = 1
 		self.lev_1 = Level_1(self.screen)
 		
 	def get_input(self):
@@ -141,6 +164,49 @@ class Select_player:
 				if event.key == pygame.K_RETURN:
 					self.lev_1.run()
 					self.loop = 0
+	'''
+	def run(self):
+		while self.loop == 1:
+			self.screen.fill((255,255,255))
+			y = 0
+			for line in self.text.split("\n"):
+				line = self.font.render(line, True, (0,0,0))
+				self.screen.blit(line, (0, y+self.y))
+				y -= self.font.get_height()
+			pygame.display.update()
+			pygame.time.delay(25)
+	
+	'''	
+	def run(self):
+		while self.loop == 1:
+			self.get_input()
+			self.y -= 1
+			self.screen.fill((255,255,255))
+			self.screen.blit(self.story_text, (0,self.y))
+			pygame.display.update()
+			pygame.time.delay(25)
+
+		
+class Select_player:
+	def __init__(self, screen_name):
+		self.loop = 1
+		self.screen = screen_name
+		self.player_1_img = pygame.image.load(os.path.join('graphics', 'john.png'))
+		self.default_font = pygame.font.get_default_font()
+		self.font = pygame.font.SysFont(self.default_font, 26)
+		self.header_text = self.font.render("CHOOSE PLAYER", True, (0,0,0))
+		self.story = Story_screen(self.screen)
+		
+	def get_input(self):
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				exit()
+			elif event.type == pygame.KEYDOWN:
+				if event.key == pygame.K_ESCAPE:
+					exit()
+				if event.key == pygame.K_RETURN:
+					self.story.run()
+					self.loop = 0
 		
 	def run(self):
 		while self.loop == 1:
@@ -152,7 +218,7 @@ class Select_player:
 			self.screen.blit(self.header_text, (5,5))
 			pygame.display.update()
 			pygame.time.delay(25)
-
+				
 class Setup:
 	def __init__(self):
 		self.loop = 1
@@ -161,7 +227,7 @@ class Setup:
 		self.window_title = pygame.display.set_caption("NEW-WARE-ORDER")
 		self.bg_img = pygame.image.load(os.path.join('graphics', 'intro_screen.png'))
 		self.sel_player = Select_player(self.screen)
-		self.music = pygame.mixer.music.load(os.path.join('sounds', 'music.mp3'))
+		#self.music = pygame.mixer.music.load(os.path.join('sounds', 'music.mp3'))
 		self.play = 1
 		
 	def get_input(self):
@@ -178,9 +244,9 @@ class Setup:
 	def run(self):
 		while self.loop == 1:
 			print "running in: Setup class"
-			if self.play == 1:
-				pygame.mixer.music.play()
-				self.play = 0
+			#if self.play == 1:
+			#	pygame.mixer.music.play()
+			#	self.play = 0
 			self.get_input()
 			self.screen.blit(self.bg_img, (0,0))
 			pygame.display.update()
