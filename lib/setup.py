@@ -105,13 +105,21 @@ class Transition:
 		self.screen = screen_name		
 		
 	def run(self):
+		size = 100
 		while self.loop == 1:
+			pygame.draw.circle(self.screen, (0,0,0), (300,300), size)
+			size += 10
+			pygame.display.update()
+			#pygame.time.delay(10)
+			
+			'''
 			random.seed()
 			x = random.randrange(0, 600)
 			y = random.randrange(0, 600)
 			pygame.draw.circle(self.screen, (0, 0, 0), (x,y), 100)
 			pygame.display.update()
 			#pygame.time.delay(6)
+			'''
 		
 class Level_1:
 	def __init__(self, screen_name):
