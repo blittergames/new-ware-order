@@ -106,11 +106,29 @@ class Transition:
 		
 	def run(self):
 		size = 100
+		switch = 1
 		while self.loop == 1:
-			pygame.draw.circle(self.screen, (0,0,0), (300,300), size)
-			size += 10
-			pygame.display.update()
-			#pygame.time.delay(10)
+			
+			if size < 500 and switch == 1:
+				pygame.draw.circle(self.screen, (0,0,0), (300,300), size)
+				size += 10
+				pygame.display.update()
+				print str(size) + " - if#1"
+			else:
+			#if size >= 500:
+				switch = 0
+				self.screen.fill((255,255,255))
+				pygame.draw.circle(self.screen, (0,0,0), (300,300), size)
+				size -= 10
+				print str(size) + " - if#2"
+				pygame.display.update()
+			
+			if size < 0:
+				self.loop = 0
+				break
+			
+			#print str(size)
+			#pygame.time.delay(40)
 			
 			'''
 			random.seed()
@@ -120,6 +138,7 @@ class Transition:
 			pygame.display.update()
 			#pygame.time.delay(6)
 			'''
+		
 		
 class Level_1:
 	def __init__(self, screen_name):
@@ -145,7 +164,7 @@ class Level_1:
 		while self.loop == 1:
 			print "running in: Level_1 class"
 			self.get_input()
-			self.screen.fill((255,255,255))
+			#self.screen.fill((255,255,255))
 			self.screen.blit(self.floor, (0,0))
 			self.player_1.update()
 			pygame.display.update()
